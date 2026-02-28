@@ -5,97 +5,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fynsk Fodbold Quiz – DBU Fyn</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
-    <div class="quiz-container">
-        <!-- Home Screen -->
-        <div id="home-screen" class="screen active">
-            <div class="header">
+    <div class="app">
+
+        <!-- ==================== HOME ==================== -->
+        <div id="home" class="screen active">
+            <div class="home-header">
+                <div class="home-logo">&#9917;</div>
                 <h1>Fynsk Fodbold Quiz</h1>
-                <h2>DBU Fyn</h2>
-                <p class="subtitle">Test din viden om fynsk fodbold</p>
+                <p class="home-sub">DBU Fyn</p>
+            </div>
+            <div class="role-cards">
+                <button class="role-card" onclick="goToSetup()">
+                    <span class="role-icon">&#128421;</span>
+                    <h2>Quizmaster</h2>
+                    <p>Opret quiz og vis sp&oslash;rgsm&aring;l p&aring; storsk&aelig;rm</p>
+                </button>
+                <button class="role-card" onclick="goToJoin()">
+                    <span class="role-icon">&#128241;</span>
+                    <h2>Deltager</h2>
+                    <p>Spil med p&aring; din telefon</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== FACILITATOR: SETUP ==================== -->
+        <div id="f-setup" class="screen">
+            <div class="setup-top">
+                <button class="back-btn" onclick="goHome()">&larr; Tilbage</button>
+                <h2>V&aelig;lg Quiz</h2>
             </div>
             <div class="quiz-grid">
-                <div class="quiz-card" onclick="selectQuiz('history')">
+                <div class="quiz-card" data-quiz="history" onclick="selectQuizForGame('history')">
                     <div class="quiz-card-icon">&#9917;</div>
                     <h3>Fynsk Fodbold Gennem Tiderne</h3>
-                    <p>OB, fynske klubber, legendariske spillere og de store øjeblikke i fynsk fodboldhistorie.</p>
-                    <span class="quiz-card-count">20 spørgsmål</span>
+                    <p>OB, fynske klubber, legend&aelig;re spillere og de store &oslash;jeblikke.</p>
                 </div>
-                <div class="quiz-card" onclick="selectQuiz('beretning2024')">
+                <div class="quiz-card" data-quiz="beretning2024" onclick="selectQuizForGame('beretning2024')">
                     <div class="quiz-card-icon">&#128221;</div>
-                    <h3>Formandens Beretning: Organisation &amp; Udvikling</h3>
-                    <p>Tal, fakta og initiativer fra DBU Fyns arbejde med at udvikle fodbolden på Fyn.</p>
-                    <span class="quiz-card-count">20 spørgsmål</span>
+                    <h3>Formandens Beretning: Organisation</h3>
+                    <p>Tal, fakta og initiativer fra DBU Fyns organisatoriske arbejde.</p>
                 </div>
-                <div class="quiz-card" onclick="selectQuiz('beretning_bredde')">
+                <div class="quiz-card" data-quiz="beretning_bredde" onclick="selectQuizForGame('beretning_bredde')">
                     <div class="quiz-card-icon">&#127942;</div>
-                    <h3>Formandens Beretning: Bredde &amp; Samfund</h3>
-                    <p>Breddefodbold, frivillighed, kvindefodbold og fodboldens rolle i det fynske samfund.</p>
-                    <span class="quiz-card-count">20 spørgsmål</span>
+                    <h3>Formandens Beretning: Bredde</h3>
+                    <p>Breddefodbold, frivillighed og fodboldens rolle i samfundet.</p>
+                </div>
+            </div>
+            <div class="setup-options" id="setup-options" style="display:none">
+                <label>Antal sp&oslash;rgsm&aring;l:</label>
+                <div class="count-buttons" id="f-count-buttons"></div>
+                <button class="btn btn-primary btn-large" onclick="createGame()">Opret Spil</button>
+            </div>
+        </div>
+
+        <!-- ==================== FACILITATOR: LOBBY ==================== -->
+        <div id="f-lobby" class="screen dark">
+            <div class="lobby-pin-area">
+                <p class="lobby-instruction">G&aring; til quizzen og indtast koden:</p>
+                <div class="pin-display" id="f-pin-display"></div>
+                <p class="lobby-status" id="f-lobby-status">Opretter forbindelse...</p>
+            </div>
+            <div class="lobby-players">
+                <h3><span id="f-player-count">0</span> deltagere</h3>
+                <div class="player-list" id="f-player-list"></div>
+            </div>
+            <div class="lobby-actions">
+                <button class="btn btn-secondary" onclick="goHome()">Annuller</button>
+                <button class="btn btn-primary btn-large" id="f-start-btn" onclick="fStartGame()" disabled>Start Quiz</button>
+            </div>
+        </div>
+
+        <!-- ==================== FACILITATOR: QUESTION ==================== -->
+        <div id="f-question" class="screen dark">
+            <div class="f-q-top">
+                <span class="f-q-counter" id="f-q-counter"></span>
+                <div class="f-timer-circle" id="f-timer-circle">
+                    <span id="f-timer-text">20</span>
+                </div>
+                <span class="f-q-answers" id="f-q-answers">0 svar</span>
+            </div>
+            <div class="f-timer-bar-wrap">
+                <div class="f-timer-bar" id="f-timer-bar"></div>
+            </div>
+            <h2 class="f-question-text" id="f-question-text"></h2>
+            <div class="f-options-grid" id="f-options-grid"></div>
+            <div class="f-controls" id="f-controls" style="display:none">
+                <button class="btn btn-accent btn-large" id="f-next-action" onclick="fNextAction()"></button>
+            </div>
+        </div>
+
+        <!-- ==================== FACILITATOR: LEADERBOARD ==================== -->
+        <div id="f-leaderboard" class="screen dark">
+            <h2 class="lb-title">Scoreboard</h2>
+            <div class="lb-list" id="f-lb-list"></div>
+            <div class="f-controls">
+                <button class="btn btn-accent btn-large" id="f-lb-next" onclick="fNextFromLeaderboard()"></button>
+            </div>
+        </div>
+
+        <!-- ==================== FACILITATOR: FINAL ==================== -->
+        <div id="f-final" class="screen dark">
+            <h2 class="final-title">Endeligt Resultat</h2>
+            <div class="podium" id="f-podium"></div>
+            <div class="full-lb" id="f-full-lb"></div>
+            <button class="btn btn-accent btn-large" onclick="goHome()">Nyt Spil</button>
+        </div>
+
+        <!-- ==================== PLAYER: JOIN ==================== -->
+        <div id="p-join" class="screen">
+            <div class="p-join-box">
+                <h2>Deltag i Quiz</h2>
+                <input type="text" id="p-code-input" placeholder="Spilkode" maxlength="6" inputmode="numeric" autocomplete="off">
+                <input type="text" id="p-name-input" placeholder="Dit navn" maxlength="20" autocomplete="off">
+                <p class="p-join-error" id="p-join-error"></p>
+                <button class="btn btn-primary btn-large" id="p-join-btn" onclick="pJoinGame()">Deltag</button>
+                <button class="back-btn" onclick="goHome()">&larr; Tilbage</button>
+            </div>
+        </div>
+
+        <!-- ==================== PLAYER: LOBBY ==================== -->
+        <div id="p-lobby" class="screen">
+            <div class="p-lobby-box">
+                <div class="p-check">&#10003;</div>
+                <h2>Du er med!</h2>
+                <p class="p-name-show" id="p-name-show"></p>
+                <div class="p-waiting-dots">
+                    <span>Venter p&aring; quizmasteren</span>
+                    <span class="dots"></span>
                 </div>
             </div>
         </div>
 
-        <!-- Start Screen (quiz selected) -->
-        <div id="start-screen" class="screen">
-            <div class="header">
-                <h1 id="quiz-title"></h1>
-                <h2 id="quiz-subtitle"></h2>
-                <p class="subtitle" id="quiz-description"></p>
+        <!-- ==================== PLAYER: QUESTION ==================== -->
+        <div id="p-question" class="screen">
+            <div class="p-q-top">
+                <span class="p-q-counter" id="p-q-counter"></span>
+                <span class="p-q-score" id="p-q-score">0 point</span>
             </div>
-            <div class="info-box">
-                <p id="quiz-info-text"></p>
-                <div class="question-count-selector">
-                    <label for="question-count">Antal spørgsmål:</label>
-                    <div class="count-buttons" id="count-buttons"></div>
-                </div>
+            <div class="p-timer-bar-wrap">
+                <div class="p-timer-bar" id="p-timer-bar"></div>
             </div>
-            <div class="start-buttons">
-                <button class="btn btn-secondary" onclick="goHome()">Tilbage</button>
-                <button id="start-btn" class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+            <p class="p-question-text" id="p-question-text"></p>
+            <div class="p-options" id="p-options"></div>
+        </div>
+
+        <!-- ==================== PLAYER: RESULT ==================== -->
+        <div id="p-result" class="screen">
+            <div class="p-result-box" id="p-result-box">
+                <div class="p-result-emoji" id="p-result-emoji"></div>
+                <h2 id="p-result-title"></h2>
+                <p class="p-result-points" id="p-result-points"></p>
+                <p class="p-result-total" id="p-result-total"></p>
+                <p class="p-result-rank" id="p-result-rank"></p>
             </div>
         </div>
 
-        <!-- Quiz Screen -->
-        <div id="quiz-screen" class="screen">
-            <div class="progress-bar-container">
-                <div id="progress-bar" class="progress-bar"></div>
-            </div>
-            <div class="quiz-header">
-                <span id="question-counter" class="question-counter">Spørgsmål 1 af 20</span>
-                <span id="score-display" class="score-display">Score: 0</span>
-            </div>
-            <div id="category-badge" class="category-badge"></div>
-            <h2 id="question-text" class="question-text"></h2>
-            <div id="options-container" class="options-container"></div>
-            <div id="explanation-box" class="explanation-box hidden">
-                <p id="explanation-text"></p>
-            </div>
-            <button id="next-btn" class="btn btn-primary hidden" onclick="nextQuestion()">Næste spørgsmål</button>
-        </div>
-
-        <!-- Result Screen -->
-        <div id="result-screen" class="screen">
-            <h1 id="result-title"></h1>
-            <div id="result-icon" class="result-icon"></div>
-            <p id="result-score" class="result-score"></p>
-            <p id="result-message" class="result-message"></p>
-            <div id="result-stats" class="result-stats"></div>
-            <div class="result-buttons">
-                <button class="btn btn-secondary" onclick="goHome()">Vælg anden quiz</button>
-                <button class="btn btn-primary" onclick="restartQuiz()">Prøv igen</button>
+        <!-- ==================== PLAYER: FINAL ==================== -->
+        <div id="p-final" class="screen">
+            <div class="p-final-box">
+                <div class="p-final-emoji" id="p-final-emoji"></div>
+                <h2>Spillet er slut!</h2>
+                <p class="p-final-rank" id="p-final-rank"></p>
+                <p class="p-final-score" id="p-final-score"></p>
+                <button class="btn btn-primary btn-large" onclick="goHome()">Nyt Spil</button>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>Fynsk Fodbold Quiz &copy; 2026 – Baseret på formandens beretninger fra DBU Fyn</p>
-    </footer>
-
     <script src="questions.js"></script>
     <script src="questions_beretning2024.js"></script>
     <script src="questions_beretning_bredde.js"></script>
-    <script src="quiz.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
