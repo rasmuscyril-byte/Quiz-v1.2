@@ -3,27 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fynsk Fodbold Quiz – Gennem Tiderne</title>
+    <title>Fynsk Fodbold Quiz – DBU Fyn</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="quiz-container">
-        <!-- Start Screen -->
-        <div id="start-screen" class="screen active">
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen active">
             <div class="header">
-                <h1>⚽ Fynsk Fodbold Quiz</h1>
-                <h2>Gennem Tiderne</h2>
-                <p class="subtitle">Baseret på formandens beretninger fra den fynske fodboldhistorie</p>
+                <h1>Fynsk Fodbold Quiz</h1>
+                <h2>DBU Fyn</h2>
+                <p class="subtitle">Test din viden om fynsk fodbold</p>
+            </div>
+            <div class="quiz-grid">
+                <div class="quiz-card" onclick="selectQuiz('history')">
+                    <div class="quiz-card-icon">&#9917;</div>
+                    <h3>Fynsk Fodbold Gennem Tiderne</h3>
+                    <p>OB, fynske klubber, legendariske spillere og de store øjeblikke i fynsk fodboldhistorie.</p>
+                    <span class="quiz-card-count">20 spørgsmål</span>
+                </div>
+                <div class="quiz-card" onclick="selectQuiz('beretning2024')">
+                    <div class="quiz-card-icon">&#128221;</div>
+                    <h3>Formandens Beretning: Organisation &amp; Udvikling</h3>
+                    <p>Tal, fakta og initiativer fra DBU Fyns arbejde med at udvikle fodbolden på Fyn.</p>
+                    <span class="quiz-card-count">20 spørgsmål</span>
+                </div>
+                <div class="quiz-card" onclick="selectQuiz('beretning_bredde')">
+                    <div class="quiz-card-icon">&#127942;</div>
+                    <h3>Formandens Beretning: Bredde &amp; Samfund</h3>
+                    <p>Breddefodbold, frivillighed, kvindefodbold og fodboldens rolle i det fynske samfund.</p>
+                    <span class="quiz-card-count">20 spørgsmål</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Screen (quiz selected) -->
+        <div id="start-screen" class="screen">
+            <div class="header">
+                <h1 id="quiz-title"></h1>
+                <h2 id="quiz-subtitle"></h2>
+                <p class="subtitle" id="quiz-description"></p>
             </div>
             <div class="info-box">
-                <p>Test din viden om fynsk fodbold – fra de tidlige pionerår til moderne tider. Quizzen dækker OB, fynske klubber, legendariske spillere, stadions og de store øjeblikke i den fynske fodboldhistorie.</p>
-                <ul>
-                    <li><strong>20 spørgsmål</strong> om fynsk fodbold</li>
-                    <li><strong>4 svarmuligheder</strong> per spørgsmål</li>
-                    <li><strong>Forklaringer</strong> ved hvert svar</li>
-                </ul>
+                <p id="quiz-info-text"></p>
+                <div class="question-count-selector">
+                    <label for="question-count">Antal spørgsmål:</label>
+                    <div class="count-buttons" id="count-buttons"></div>
+                </div>
             </div>
-            <button id="start-btn" class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+            <div class="start-buttons">
+                <button class="btn btn-secondary" onclick="goHome()">Tilbage</button>
+                <button id="start-btn" class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+            </div>
         </div>
 
         <!-- Quiz Screen -->
@@ -51,15 +82,20 @@
             <p id="result-score" class="result-score"></p>
             <p id="result-message" class="result-message"></p>
             <div id="result-stats" class="result-stats"></div>
-            <button class="btn btn-primary" onclick="restartQuiz()">Prøv igen</button>
+            <div class="result-buttons">
+                <button class="btn btn-secondary" onclick="goHome()">Vælg anden quiz</button>
+                <button class="btn btn-primary" onclick="restartQuiz()">Prøv igen</button>
+            </div>
         </div>
     </div>
 
     <footer>
-        <p>Fynsk Fodbold Quiz &copy; 2026 – Baseret på formandens beretninger</p>
+        <p>Fynsk Fodbold Quiz &copy; 2026 – Baseret på formandens beretninger fra DBU Fyn</p>
     </footer>
 
     <script src="questions.js"></script>
+    <script src="questions_beretning2024.js"></script>
+    <script src="questions_beretning_bredde.js"></script>
     <script src="quiz.js"></script>
 </body>
 </html>

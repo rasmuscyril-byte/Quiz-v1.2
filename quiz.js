@@ -1,10 +1,38 @@
+// === Quiz Catalog ===
+const quizCatalog = {
+    history: {
+        title: "Fynsk Fodbold Quiz",
+        subtitle: "Gennem Tiderne",
+        description: "Baseret på formandens beretninger fra den fynske fodboldhistorie",
+        infoText: "Test din viden om fynsk fodbold – fra de tidlige pionerår til moderne tider. Quizzen dækker OB, fynske klubber, legendariske spillere, stadions og de store øjeblikke.",
+        questions: quizQuestions
+    },
+    beretning2024: {
+        title: "Formandens Beretning",
+        subtitle: "Organisation & Udvikling",
+        description: "Tal, fakta og initiativer fra DBU Fyns organisatoriske arbejde",
+        infoText: "Test din viden om DBU Fyns organisation, turneringer, dommerarbejde, trænere og de strategiske initiativer der driver fynsk fodbold fremad.",
+        questions: quizBeretning2024
+    },
+    beretning_bredde: {
+        title: "Formandens Beretning",
+        subtitle: "Bredde & Samfund",
+        description: "Breddefodbold, frivillighed og fodboldens rolle i det fynske samfund",
+        infoText: "Test din viden om breddefodbold, kvindefodbold, frivillighed, ungdomsarbejde og fodboldens sociale rolle på Fyn – alt sammen baseret på formandens beretninger.",
+        questions: quizBeretningBredde
+    }
+};
+
 // === Quiz State ===
 let currentQuestionIndex = 0;
 let score = 0;
 let answered = false;
 let shuffledQuestions = [];
+let selectedQuizId = null;
+let selectedQuestionCount = 0;
 
 // === DOM Elements ===
+const homeScreen = document.getElementById('home-screen');
 const startScreen = document.getElementById('start-screen');
 const quizScreen = document.getElementById('quiz-screen');
 const resultScreen = document.getElementById('result-screen');
@@ -33,11 +61,50 @@ function showScreen(screen) {
     screen.classList.add('active');
 }
 
+// === Home & Selection ===
+function goHome() {
+    showScreen(homeScreen);
+}
+
+function selectQuiz(quizId) {
+    selectedQuizId = quizId;
+    const quiz = quizCatalog[quizId];
+    const totalAvailable = quiz.questions.length;
+
+    document.getElementById('quiz-title').textContent = quiz.title;
+    document.getElementById('quiz-subtitle').textContent = quiz.subtitle;
+    document.getElementById('quiz-description').textContent = quiz.description;
+    document.getElementById('quiz-info-text').textContent = quiz.infoText;
+
+    // Build count buttons
+    const countOptions = [5, 10, 15, totalAvailable];
+    // Remove duplicates and filter
+    const uniqueCounts = [...new Set(countOptions)].filter(c => c <= totalAvailable);
+    const countContainer = document.getElementById('count-buttons');
+    countContainer.innerHTML = '';
+    selectedQuestionCount = uniqueCounts[uniqueCounts.length - 1]; // default to all
+
+    uniqueCounts.forEach(count => {
+        const btn = document.createElement('button');
+        btn.className = 'count-btn' + (count === selectedQuestionCount ? ' active' : '');
+        btn.textContent = count === totalAvailable ? `Alle (${totalAvailable})` : count;
+        btn.addEventListener('click', () => {
+            selectedQuestionCount = count;
+            countContainer.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+        countContainer.appendChild(btn);
+    });
+
+    showScreen(startScreen);
+}
+
 // === Quiz Functions ===
 function startQuiz() {
     currentQuestionIndex = 0;
     score = 0;
-    shuffledQuestions = shuffleArray(quizQuestions);
+    const quiz = quizCatalog[selectedQuizId];
+    shuffledQuestions = shuffleArray(quiz.questions).slice(0, selectedQuestionCount);
     showScreen(quizScreen);
     loadQuestion();
 }
@@ -47,18 +114,12 @@ function loadQuestion() {
     const q = shuffledQuestions[currentQuestionIndex];
     const total = shuffledQuestions.length;
 
-    // Update progress
     progressBar.style.width = ((currentQuestionIndex / total) * 100) + '%';
     questionCounter.textContent = `Spørgsmål ${currentQuestionIndex + 1} af ${total}`;
     scoreDisplay.textContent = `Score: ${score}`;
-
-    // Category badge
     categoryBadge.textContent = q.category;
-
-    // Question text
     questionText.textContent = q.question;
 
-    // Options
     const letters = ['A', 'B', 'C', 'D'];
     optionsContainer.innerHTML = '';
     q.options.forEach((option, index) => {
@@ -72,7 +133,6 @@ function loadQuestion() {
         optionsContainer.appendChild(btn);
     });
 
-    // Hide explanation and next button
     explanationBox.classList.add('hidden');
     nextBtn.classList.add('hidden');
 }
@@ -90,7 +150,6 @@ function selectAnswer(selectedIndex) {
         scoreDisplay.textContent = `Score: ${score}`;
     }
 
-    // Mark buttons
     buttons.forEach((btn, index) => {
         btn.classList.add('disabled');
         if (index === q.correct) {
@@ -100,14 +159,10 @@ function selectAnswer(selectedIndex) {
         }
     });
 
-    // Show explanation
     explanationText.textContent = q.explanation;
     explanationBox.classList.remove('hidden');
-
-    // Show next button
     nextBtn.classList.remove('hidden');
 
-    // Update button text for last question
     if (currentQuestionIndex === shuffledQuestions.length - 1) {
         nextBtn.textContent = 'Se resultat';
     } else {
@@ -131,7 +186,6 @@ function showResults() {
     const percentage = Math.round((score / total) * 100);
     const wrong = total - score;
 
-    // Title and icon
     const resultTitle = document.getElementById('result-title');
     const resultIcon = document.getElementById('result-icon');
     const resultScore = document.getElementById('result-score');
@@ -140,24 +194,24 @@ function showResults() {
 
     if (percentage >= 90) {
         resultTitle.textContent = 'Fantastisk!';
-        resultIcon.textContent = '🏆';
-        resultMessage.textContent = 'Du er en sand ekspert i fynsk fodboldhistorie! Formanden ville være stolt.';
+        resultIcon.textContent = '\uD83C\uDFC6';
+        resultMessage.textContent = 'Du er en sand ekspert i fynsk fodbold! Formanden ville v\u00e6re stolt.';
     } else if (percentage >= 70) {
-        resultTitle.textContent = 'Flot præstation!';
-        resultIcon.textContent = '⚽';
-        resultMessage.textContent = 'Du kender din fynske fodboldhistorie rigtig godt. Du har tydeligvis læst formandens beretninger!';
+        resultTitle.textContent = 'Flot pr\u00e6station!';
+        resultIcon.textContent = '\u26BD';
+        resultMessage.textContent = 'Du kender din fynske fodbold rigtig godt!';
     } else if (percentage >= 50) {
         resultTitle.textContent = 'Godkendt!';
-        resultIcon.textContent = '👏';
+        resultIcon.textContent = '\uD83D\uDC4F';
         resultMessage.textContent = 'Du har et fornuftigt kendskab til fynsk fodbold, men der er plads til forbedring.';
     } else if (percentage >= 30) {
         resultTitle.textContent = 'Der er plads til forbedring';
-        resultIcon.textContent = '📖';
-        resultMessage.textContent = 'Måske er det tid til at dykke ned i formandens beretninger og fynsk fodboldhistorie!';
+        resultIcon.textContent = '\uD83D\uDCD6';
+        resultMessage.textContent = 'M\u00e5ske er det tid til at dykke ned i formandens beretninger!';
     } else {
-        resultTitle.textContent = 'Øv!';
-        resultIcon.textContent = '😅';
-        resultMessage.textContent = 'Det ser ud til, at fynsk fodbold er nyt territorium for dig. Tid til at studere formandens beretninger!';
+        resultTitle.textContent = '\u00d8v!';
+        resultIcon.textContent = '\uD83D\uDE05';
+        resultMessage.textContent = 'Tid til at studere formandens beretninger fra DBU Fyn!';
     }
 
     resultScore.textContent = `${score} af ${total} rigtige (${percentage}%)`;
@@ -179,5 +233,5 @@ function showResults() {
 }
 
 function restartQuiz() {
-    showScreen(startScreen);
+    selectQuiz(selectedQuizId);
 }
