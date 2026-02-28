@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fynsk Fodbold Quiz – Gennem Tiderne</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="header">
+                <h1>⚽ Fynsk Fodbold Quiz</h1>
+                <h2>Gennem Tiderne</h2>
+                <p class="subtitle">Baseret på formandens beretninger fra den fynske fodboldhistorie</p>
+            </div>
+            <div class="info-box">
+                <p>Test din viden om fynsk fodbold – fra de tidlige pionerår til moderne tider. Quizzen dækker OB, fynske klubber, legendariske spillere, stadions og de store øjeblikke i den fynske fodboldhistorie.</p>
+                <ul>
+                    <li><strong>20 spørgsmål</strong> om fynsk fodbold</li>
+                    <li><strong>4 svarmuligheder</strong> per spørgsmål</li>
+                    <li><strong>Forklaringer</strong> ved hvert svar</li>
+                </ul>
+            </div>
+            <button id="start-btn" class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div class="quiz-header">
+                <span id="question-counter" class="question-counter">Spørgsmål 1 af 20</span>
+                <span id="score-display" class="score-display">Score: 0</span>
+            </div>
+            <div id="category-badge" class="category-badge"></div>
+            <h2 id="question-text" class="question-text"></h2>
+            <div id="options-container" class="options-container"></div>
+            <div id="explanation-box" class="explanation-box hidden">
+                <p id="explanation-text"></p>
+            </div>
+            <button id="next-btn" class="btn btn-primary hidden" onclick="nextQuestion()">Næste spørgsmål</button>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <h1 id="result-title"></h1>
+            <div id="result-icon" class="result-icon"></div>
+            <p id="result-score" class="result-score"></p>
+            <p id="result-message" class="result-message"></p>
+            <div id="result-stats" class="result-stats"></div>
+            <button class="btn btn-primary" onclick="restartQuiz()">Prøv igen</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Fynsk Fodbold Quiz &copy; 2026 – Baseret på formandens beretninger</p>
+    </footer>
+
+    <script src="questions.js"></script>
+    <script src="quiz.js"></script>
+</body>
+</html>
