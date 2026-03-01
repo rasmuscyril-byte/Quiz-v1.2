@@ -11,7 +11,8 @@ const PEER_PREFIX = 'fynquiz';
 const quizCatalog = {
     history:          { title: 'Fynsk Fodbold Gennem Tiderne', questions: quizQuestions },
     beretning2024:    { title: 'Formandens Beretning: Organisation', questions: quizBeretning2024 },
-    beretning_bredde: { title: 'Formandens Beretning: Bredde', questions: quizBeretningBredde }
+    beretning_bredde: { title: 'Formandens Beretning: Bredde', questions: quizBeretningBredde },
+    beretning2025:    { title: 'Forpersonens Beretning 2025', questions: quizBeretning2025 }
 };
 
 // ========================= STATE =========================
