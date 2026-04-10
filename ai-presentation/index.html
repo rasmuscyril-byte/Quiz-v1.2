@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI over tid – Generationernes holdninger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Progress bar -->
+  <div class="progress-bar" aria-hidden="true">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- Slide indicator (dots) -->
+  <nav class="dots" aria-label="Slide-navigation">
+    <button class="dot" data-slide="0" aria-label="Gå til slide 1"></button>
+    <button class="dot" data-slide="1" aria-label="Gå til slide 2"></button>
+    <button class="dot" data-slide="2" aria-label="Gå til slide 3"></button>
+    <button class="dot" data-slide="3" aria-label="Gå til slide 4"></button>
+    <button class="dot" data-slide="4" aria-label="Gå til slide 5"></button>
+    <button class="dot" data-slide="5" aria-label="Gå til slide 6"></button>
+  </nav>
+
+  <!-- Navigation arrows -->
+  <button class="nav-arrow nav-prev" id="navPrev" aria-label="Forrige slide">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </button>
+  <button class="nav-arrow nav-next" id="navNext" aria-label="Næste slide">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </button>
+
+  <!-- Slide counter -->
+  <div class="slide-counter">
+    <span id="currentSlide">1</span> / <span id="totalSlides">6</span>
+  </div>
+
+  <!-- Slides container -->
+  <main class="slides" id="slides">
+
+    <!-- SLIDE 1: FORSIDE -->
+    <section class="slide slide-cover" data-theme="cover">
+      <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+      </div>
+      <div class="slide-content cover-content">
+        <span class="eyebrow">Interaktiv præsentation · 2026</span>
+        <h1 class="cover-title">
+          AI <span class="gradient-text">over tid</span>
+        </h1>
+        <p class="cover-subtitle">
+          Hvordan generationerne tager imod fremtiden
+        </p>
+        <p class="cover-description">
+          En interaktiv gennemgang af holdninger fra Boomers til Gen Z
+        </p>
+        <button class="btn-primary" id="startBtn">
+          Start Præsentationen
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+        <div class="hint">
+          <kbd>←</kbd> <kbd>→</kbd> Brug piletasterne eller scroll for at navigere
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: BABY BOOMERS -->
+    <section class="slide slide-boomers" data-theme="boomers">
+      <div class="slide-content grid-content">
+        <div class="side side-left">
+          <span class="generation-tag">Født ca. 1946–1964</span>
+          <h2 class="slide-title">
+            Baby Boomers
+            <span class="subtitle-line">Skepsis og Sikkerhed</span>
+          </h2>
+          <p class="stance">
+            <strong>Holdning til AI:</strong> Overvejende skeptiske, men ser
+            potentiale i specifikke løsninger – særligt inden for sundhedsteknologi.
+          </p>
+        </div>
+        <div class="side side-right">
+          <h3 class="points-title">Nøglepointer</h3>
+          <ul class="points">
+            <li>
+              <span class="point-icon">🔒</span>
+              <div>
+                <strong>Datasikkerhed &amp; svindel</strong>
+                <p>Bekymrede for overvågning og digital sikkerhed.</p>
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">🤝</span>
+              <div>
+                <strong>Menneskelig kontakt</strong>
+                <p>Frygter at den personlige kundeservice forsvinder.</p>
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">📱</span>
+              <div>
+                <strong>Ubevidst brug</strong>
+                <p>Bruger AI via algoritmer i Facebook og GPS – sjældent aktivt som ChatGPT.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="big-number">01</div>
+    </section>
+
+    <!-- SLIDE 3: GENERATION X -->
+    <section class="slide slide-genx" data-theme="genx">
+      <div class="slide-content grid-content">
+        <div class="side side-left">
+          <span class="generation-tag">Født ca. 1965–1980</span>
+          <h2 class="slide-title">
+            Generation X
+            <span class="subtitle-line">Pragmatikerne</span>
+          </h2>
+          <p class="stance">
+            <strong>Holdning til AI:</strong> Forsigtigt optimistiske. Fokuserer på,
+            hvad der virker og skaber effektivitet i hverdagen.
+          </p>
+        </div>
+        <div class="side side-right">
+          <h3 class="points-title">Nøglepointer</h3>
+          <ul class="points">
+            <li>
+              <span class="point-icon">⚙️</span>
+              <div>
+                <strong>Optimering</strong>
+                <p>Ser AI som et værktøj til at optimere arbejdsgange.</p>
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">🎓</span>
+              <div>
+                <strong>Børnenes fremtid</strong>
+                <p>Bekymrede for, hvordan AI påvirker uddannelse og jobmarked.</p>
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">🔍</span>
+              <div>
+                <strong>Gennemsigtighed</strong>
+                <p>Vil vide, hvordan deres data bruges af virksomheder og AI.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="big-number">02</div>
+    </section>
+
+    <!-- SLIDE 4: MILLENNIALS -->
+    <section class="slide slide-millennials" data-theme="millennials">
+      <div class="slide-content grid-content">
+        <div class="side side-left">
+          <span class="generation-tag">Født ca. 1981–1996</span>
+          <h2 class="slide-title">
+            Millennials
+            <span class="subtitle-line">Integratørerne</span>
+          </h2>
+          <p class="stance">
+            <strong>Holdning til AI:</strong> Høj adoption. AI er en fast del
+            af deres professionelle værktøjskasse.
+          </p>
+        </div>
+        <div class="side side-right">
+          <h3 class="points-title">Nøglepointer</h3>
+          <ul class="points">
+            <li>
+              <span class="point-icon">🚀</span>
+              <div>
+                <strong>Arbejd smartere</strong>
+                <p>Bruger AI som produktivitets-hack – ikke hårdere, men smartere.</p>
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">⚖️</span>
+              <div>
+                <strong>Etik i fokus</strong>
+                <p>Optaget af bias, ophavsret og AI's samfundsmæssige indvirkning.</p>
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">📈</span>
+              <div>
+                <strong>Upskilling-pres</strong>
+                <p>Føler et pres for løbende at udvikle sig for ikke at blive erstattet.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="big-number">03</div>
+    </section>
+
+    <!-- SLIDE 5: GENERATION Z -->
+    <section class="slide slide-genz" data-theme="genz">
+      <div class="slide-content grid-content">
+        <div class="side side-left">
+          <span class="generation-tag">Født ca. 1997–2012</span>
+          <h2 class="slide-title">
+            Generation Z
+            <span class="subtitle-line">De AI-Indfødte</span>
+          </h2>
+          <p class="stance">
+            <strong>Holdning til AI:</strong> Naturlig integration. AI er en
+            forlængelse af deres tankeproces og kreative udfoldelse.
+          </p>
+        </div>
+        <div class="side side-right">
+          <h3 class="points-title">Nøglepointer</h3>
+          <ul class="points">
+            <li>
+              <span class="point-icon">✨</span>
+              <div>
+                <strong>Aktiv brug</strong>
+                <p>Læring, lektiehjælp, kodning og billed-/videogenerering.</p>
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">📲</span>
+              <div>
+                <strong>Tillid til algoritmer</strong>
+                <p>Stoler på AI-anbefalinger (som TikToks feed) mere end ældre generationer.</p>
+              </div>
+            </li>
+            <li>
+              <span class="point-icon">⚡</span>
+              <div>
+                <strong>To lejre</strong>
+                <p>Enorm begejstring vs. eksistentiel frygt for fremtidige entry-level jobs.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="big-number">04</div>
+    </section>
+
+    <!-- SLIDE 6: KONKLUSION -->
+    <section class="slide slide-conclusion" data-theme="conclusion">
+      <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+      </div>
+      <div class="slide-content conclusion-content">
+        <span class="eyebrow">Konklusion</span>
+        <h2 class="conclusion-title">Fællesnævneren</h2>
+        <p class="conclusion-text">
+          Selvom tilgangen varierer fra <em>frygt for datamisbrug</em> (Boomers)
+          til <em>eksistentiel karriereangst</em> (Gen Z), er alle generationer
+          enige om én ting:
+        </p>
+        <p class="conclusion-highlight">
+          AI er kommet for at blive.
+        </p>
+        <p class="conclusion-text">
+          Forskellen ligger i, om vi ser det som
+          <span class="pill pill-red">en trussel mod menneskeligheden</span>,
+          <span class="pill pill-blue">et praktisk værktøj</span>
+          eller
+          <span class="pill pill-green">en uundværlig livsledsager</span>.
+        </p>
+        <button class="btn-primary" id="restartBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Start forfra
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

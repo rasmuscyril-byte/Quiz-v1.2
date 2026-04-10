@@ -1,0 +1,843 @@
+/* ==========================================================================
+   AI over tid – Generationernes holdninger
+   Interaktiv præsentation
+   ========================================================================== */
+
+/* ---------- Reset & base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Base palette */
+  --bg: #0b0d12;
+  --fg: #f4f5f7;
+  --muted: rgba(244, 245, 247, 0.72);
+  --subtle: rgba(244, 245, 247, 0.14);
+
+  /* Generation themes */
+  --cover-a: #0f172a;
+  --cover-b: #1e293b;
+  --cover-accent: #8b5cf6;
+
+  --boomers-a: #3a2516;
+  --boomers-b: #6b4423;
+  --boomers-accent: #e8a87c;
+
+  --genx-a: #0f2027;
+  --genx-b: #203a43;
+  --genx-accent: #00d4c1;
+
+  --mill-a: #2d1b4e;
+  --mill-b: #5b2a86;
+  --mill-accent: #ff6b9d;
+
+  --genz-a: #0d1b2a;
+  --genz-b: #1b263b;
+  --genz-accent: #a3ff12;
+
+  --conclusion-a: #020617;
+  --conclusion-b: #1e1b4b;
+  --conclusion-accent: #38bdf8;
+
+  /* Transition */
+  --ease: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+kbd {
+  font-family: "Space Grotesk", monospace;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.85em;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- Slides container with snap scroll ---------- */
+.slides {
+  height: 100vh;
+  width: 100vw;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.slides::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  height: 100vh;
+  width: 100vw;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 5vw, 80px);
+  overflow: hidden;
+  transition: background 1s var(--ease);
+}
+
+.slide-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* ---------- Theme backgrounds per slide ---------- */
+.slide-cover {
+  background: radial-gradient(ellipse at top left, var(--cover-b), var(--cover-a) 60%);
+}
+.slide-boomers {
+  background: linear-gradient(135deg, var(--boomers-a) 0%, var(--boomers-b) 100%);
+}
+.slide-genx {
+  background: linear-gradient(135deg, var(--genx-a) 0%, var(--genx-b) 100%);
+}
+.slide-millennials {
+  background: linear-gradient(135deg, var(--mill-a) 0%, var(--mill-b) 100%);
+}
+.slide-genz {
+  background: linear-gradient(135deg, var(--genz-a) 0%, var(--genz-b) 100%);
+}
+.slide-conclusion {
+  background: radial-gradient(ellipse at bottom right, var(--conclusion-b), var(--conclusion-a) 70%);
+}
+
+/* Subtle grid overlay on all gen slides */
+.slide[data-theme="boomers"]::before,
+.slide[data-theme="genx"]::before,
+.slide[data-theme="millennials"]::before,
+.slide[data-theme="genz"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  pointer-events: none;
+}
+
+/* ---------- Animated blobs for cover/conclusion ---------- */
+.bg-blobs {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+  animation: float 14s var(--ease) infinite alternate;
+}
+
+.blob-1 {
+  width: 520px;
+  height: 520px;
+  background: var(--cover-accent);
+  top: -120px;
+  left: -140px;
+}
+
+.blob-2 {
+  width: 420px;
+  height: 420px;
+  background: #ec4899;
+  bottom: -140px;
+  right: -100px;
+  animation-delay: -4s;
+}
+
+.blob-3 {
+  width: 360px;
+  height: 360px;
+  background: #22d3ee;
+  top: 40%;
+  left: 60%;
+  animation-delay: -8s;
+}
+
+.slide-conclusion .blob-1 {
+  background: var(--conclusion-accent);
+}
+.slide-conclusion .blob-2 {
+  background: #8b5cf6;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(60px, -40px) scale(1.12);
+  }
+}
+
+/* ---------- Slide 1: Cover ---------- */
+.cover-content {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.cover-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(3rem, 9vw, 7.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+}
+
+.gradient-text {
+  background: linear-gradient(
+    120deg,
+    #a78bfa 0%,
+    #f472b6 40%,
+    #38bdf8 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: shine 6s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.cover-subtitle {
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: 500;
+  color: var(--fg);
+  margin-bottom: 10px;
+}
+
+.cover-description {
+  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+  color: var(--muted);
+  margin-bottom: 44px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 36px;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: white;
+  font-weight: 600;
+  font-size: 1.05rem;
+  border-radius: 999px;
+  box-shadow: 0 20px 40px -20px rgba(139, 92, 246, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 28px 50px -18px rgba(139, 92, 246, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.hint {
+  margin-top: 40px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ---------- Generation slides (2-col grid) ---------- */
+.grid-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 6vw, 90px);
+  align-items: center;
+}
+
+.side-left {
+  position: relative;
+}
+
+.generation-tag {
+  display: inline-block;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 999px;
+  margin-bottom: 24px;
+  border: 1px solid currentColor;
+  opacity: 0.9;
+}
+
+.slide-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  margin-bottom: 28px;
+}
+
+.subtitle-line {
+  display: block;
+  margin-top: 14px;
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  opacity: 0.85;
+}
+
+.stance {
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 480px;
+}
+
+.stance strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.points-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--subtle);
+}
+
+.points {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.points li {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: transform 0.4s var(--ease), background 0.4s var(--ease);
+}
+
+.points li:hover {
+  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.point-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.points li strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--fg);
+}
+
+.points li p {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* Big number watermark */
+.big-number {
+  position: absolute;
+  bottom: 4vh;
+  right: 5vw;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(8rem, 22vw, 22rem);
+  font-weight: 800;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+/* Per-theme accents */
+.slide[data-theme="boomers"] .generation-tag,
+.slide[data-theme="boomers"] .big-number {
+  color: var(--boomers-accent);
+}
+.slide[data-theme="boomers"] .slide-title .subtitle-line {
+  color: var(--boomers-accent);
+}
+
+.slide[data-theme="genx"] .generation-tag,
+.slide[data-theme="genx"] .big-number {
+  color: var(--genx-accent);
+}
+.slide[data-theme="genx"] .slide-title .subtitle-line {
+  color: var(--genx-accent);
+}
+
+.slide[data-theme="millennials"] .generation-tag,
+.slide[data-theme="millennials"] .big-number {
+  color: var(--mill-accent);
+}
+.slide[data-theme="millennials"] .slide-title .subtitle-line {
+  color: var(--mill-accent);
+}
+
+.slide[data-theme="genz"] .generation-tag,
+.slide[data-theme="genz"] .big-number {
+  color: var(--genz-accent);
+}
+.slide[data-theme="genz"] .slide-title .subtitle-line {
+  color: var(--genz-accent);
+}
+
+/* ---------- Slide 6: Conclusion ---------- */
+.conclusion-content {
+  text-align: center;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.conclusion-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 36px;
+  background: linear-gradient(120deg, #38bdf8, #a78bfa, #f472b6);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.conclusion-text {
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  line-height: 1.7;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.conclusion-text em {
+  color: var(--fg);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.conclusion-highlight {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--fg);
+  margin: 28px 0;
+  letter-spacing: -0.02em;
+}
+
+.pill {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95em;
+  margin: 0 2px;
+  white-space: nowrap;
+}
+
+.pill-red {
+  background: rgba(244, 63, 94, 0.15);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+}
+
+.pill-blue {
+  background: rgba(56, 189, 248, 0.15);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.pill-green {
+  background: rgba(163, 255, 18, 0.15);
+  color: #d9f99d;
+  border: 1px solid rgba(163, 255, 18, 0.35);
+}
+
+.conclusion-content .btn-primary {
+  margin-top: 44px;
+  background: linear-gradient(135deg, #38bdf8, #a78bfa);
+  box-shadow: 0 20px 40px -20px rgba(56, 189, 248, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+/* ---------- Navigation arrows ---------- */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--fg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 50;
+  transition: transform 0.3s var(--ease), background 0.3s var(--ease),
+    opacity 0.3s var(--ease);
+}
+
+.nav-arrow:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: translateY(-50%) scale(1);
+}
+
+.nav-prev {
+  left: 28px;
+}
+
+.nav-next {
+  right: 28px;
+}
+
+/* ---------- Dots navigation ---------- */
+.dots {
+  position: fixed;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 40;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 0.35s var(--ease);
+  position: relative;
+}
+
+.dot::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.dot.active {
+  background: var(--fg);
+  transform: scale(1.35);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- Progress bar ---------- */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  z-index: 100;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899, #38bdf8);
+  transition: width 0.6s var(--ease);
+}
+
+/* ---------- Slide counter ---------- */
+.slide-counter {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  font-family: "Space Grotesk", monospace;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  z-index: 40;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+#currentSlide {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+/* ---------- Enter animations (slide active) ---------- */
+.slide .slide-content > * {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+
+.slide.is-active .slide-content > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children on active slide */
+.slide.is-active .slide-content > *:nth-child(1) {
+  transition-delay: 0.1s;
+}
+.slide.is-active .slide-content > *:nth-child(2) {
+  transition-delay: 0.2s;
+}
+.slide.is-active .slide-content > *:nth-child(3) {
+  transition-delay: 0.3s;
+}
+.slide.is-active .slide-content > *:nth-child(4) {
+  transition-delay: 0.4s;
+}
+.slide.is-active .slide-content > *:nth-child(5) {
+  transition-delay: 0.5s;
+}
+.slide.is-active .slide-content > *:nth-child(6) {
+  transition-delay: 0.6s;
+}
+
+/* Grid slides: animate sides separately, and items inside right side */
+.grid-content > .side {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+
+.slide.is-active .grid-content > .side-left {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.15s;
+}
+
+.slide.is-active .grid-content > .side-right {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+.slide .points li {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease),
+    background 0.4s var(--ease);
+}
+
+.slide.is-active .points li:nth-child(1) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.45s;
+}
+
+.slide.is-active .points li:nth-child(2) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.6s;
+}
+
+.slide.is-active .points li:nth-child(3) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.75s;
+}
+
+/* Big number slide-in */
+.slide .big-number {
+  opacity: 0;
+  transform: translateX(80px);
+  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+}
+
+.slide.is-active .big-number {
+  opacity: 0.05;
+  transform: translateX(0);
+  transition-delay: 0.2s;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .grid-content {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .nav-arrow {
+    width: 48px;
+    height: 48px;
+  }
+
+  .nav-prev {
+    left: 14px;
+  }
+  .nav-next {
+    right: 14px;
+  }
+
+  .dots {
+    right: 18px;
+    gap: 12px;
+  }
+
+  .slide-counter {
+    bottom: 20px;
+    left: 20px;
+    font-size: 0.8rem;
+  }
+
+  .big-number {
+    font-size: clamp(6rem, 30vw, 14rem);
+    bottom: 2vh;
+    right: 3vw;
+  }
+
+  .slide {
+    padding: 80px 24px 80px;
+  }
+}
+
+@media (max-width: 560px) {
+  .dots {
+    display: none;
+  }
+
+  .hint {
+    font-size: 0.75rem;
+  }
+
+  .btn-primary {
+    padding: 16px 28px;
+    font-size: 0.98rem;
+  }
+
+  .points li {
+    padding: 14px;
+    gap: 14px;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+  }
+
+  html,
+  body,
+  .slides {
+    scroll-behavior: auto;
+  }
+}
